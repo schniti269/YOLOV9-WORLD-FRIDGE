@@ -5,18 +5,19 @@ from ultralytics import YOLOWorld
 
 # Initialize the YOLO model
 model = YOLOWorld('yolov8s-worldv2.pt')
+# Assuming the set_classes method exists and sets the classes for detection
 model.set_classes(["lane marking", "road barrier", "wall", "Car", "vehicle", "truck", "motorcycle", "human", "traffic sign", "stoplight", "building"])
 
 # Function to draw bounding boxes and labels on the frame
 def draw_detections(frame, detections):
-    # Loop through each detection in the result
     for det in detections:
-        # Example: Assuming each 'det' has 'x1', 'y1', 'x2', 'y2', 'label', and 'confidence'
-        x1, y1, x2, y2, label, confidence = det['x1'], det['y1'], det['x2'], det['y2'], det['label'], det['confidence']
-        
-        # Draw a bounding box rectangle and label on the frame
+        x1, y1, x2, y2 = int(det['x1']), int(det['y1']), int(det['x2']), int(det['y2'])
+        label = det['label']
+        confidence = det['confidence']
+        # Draw the bounding box
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        cv2.putText(frame, f"{label}: {confidence:.2f}", (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        # Put the label and confidence
+        cv2.putText(frame, f"{label} {confidence:.2f}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
 # Function to capture a specific region of the screen
 def capture_screen_region(x, y, width, height):
@@ -31,11 +32,16 @@ try:
     while True:
         captured_image = capture_screen_region(x, y, width, height)
 
-        # Apply the model to the captured image (adjust according to your model's input requirements)
-        results = model(captured_image)
+        # Convert captured image to the format expected by your model if necessary
+        # Apply the model to the captured image
+        results = model(captured_image)  # This step is hypothetical and depends on your actual model API
 
-        # Draw detections on the image (this step will vary based on your results object structure)
-        # Example: draw_detections(captured_image, results.detections)
+        # Process the results to match the expected format for draw_detections
+        # This is a placeholder and needs to be adapted based on your model's output
+        detections = [{"x1": det.x1, "y1": det.y1, "x2": det.x2, "y2": det.y2, "label": det.label, "confidence": det.confidence} for det in results]
+
+        # Draw detections on the image
+        draw_detections(captured_image, detections)
 
         # Display the frame
         cv2.imshow('Screen Capture with Detections', captured_image)

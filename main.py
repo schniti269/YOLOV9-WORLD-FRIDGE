@@ -10,16 +10,18 @@ import os
 # Path to the image
 #get the  newest .jpg file in the folder
 files=os.listdir()
-files.sort(key=os.path.getmtime)
+
 images=[]
 for file in files:
     if file.endswith(".jpeg"):
         images.append(file)
         break
 
+#sort the list of images
+images.sort(key=os.path.getmtime)
 SOURCE_IMAGE_PATH = images[-1]
 
-model = YOLOWorld(model_id="yolo_world/s")
+model = YOLOWorld(model_id="yolo_world/l")
 
 
 kitchen_items = [
@@ -32,7 +34,7 @@ kitchen_items = [
     "Sugar", "Salt", "Pepper", "Spices", "Oil",
     "Tomato Sauce", "Mayonnaise", "Mustard", "Ketchup", "Soy Sauce",
     "paprika","pak choi","peas","pepper","pineapple","pomegranate","potato","pumpkin","radish","raspberry",
-    "onion","packaged food","egg","coconut","cucumber"
+    "onion","packaged food","egg","coconut","cucumber","butter","carrots"
 ]
 
 classes= kitchen_items
@@ -44,7 +46,7 @@ results = model.infer(image,confidence=0.1,iou=0.3,visualize=True)
 
 detections = sv.Detections.from_inference(results)
 BOUNDING_BOX_ANNOTATOR = sv.BoundingBoxAnnotator(thickness=2)
-LABEL_ANNOTATOR = sv.LabelAnnotator(text_thickness=2, text_scale=1, text_color=sv.Color.BLACK)
+LABEL_ANNOTATOR = sv.LabelAnnotator(text_thickness=1, text_scale=0.5, text_color=sv.Color.BLACK)
 annotated_image = image.copy()
 annotated_image = BOUNDING_BOX_ANNOTATOR.annotate(annotated_image, detections)
 annotated_image = LABEL_ANNOTATOR.annotate(annotated_image, detections)

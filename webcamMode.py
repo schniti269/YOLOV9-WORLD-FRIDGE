@@ -12,22 +12,37 @@ model = YOLOWorld(model_id="yolo_world/s")
 
 # Define the classes for detection
 kitchen_items = [
-    "Bananas", "Blueberries", "Lemon","Orange","kiwi" "Grapes", "Mangoes",
-    "Lettuce", "Tomato", "Mushrooms", "Zucchini", "Potato",
-    "Chicken meat", "Beef meat", "Fish meat", "Pork meat", "Egg",
-    "Milk", "Cheese", "Butter", "Yogurt", "Cream",
-    "Water", "Juices", "Soft Drinks",
+    "Banana","Lemon","Orange","Grapes", "Mango","Apple","Pineapple",
+    "Avocado","Cherry","Strawberry","Watermelon","Peach",
+
+    "Lettuce", "Tomato", "Mushroom", "Zucchini", "Potato",
+    "Carrot", "Cucumber", "Bell Pepper", "Onion", "Garlic",
+    "Eggplant", "Broccoli", "Cauliflower", "Spinach", "Cabbage",
+    "Asparagus", "Green Beans", "Peas", "Corn", "Celery",
+
+
+    "Chicken-meat", "Beef-meat", "Fish-meat", "Pork-meat",
+    "Bacon", "Sausage", "Ham", "Salami", "Turkey meat",
+    "ground-meat",
+
+    "Milk", "Cheese", "Butter", "Yogurt", "Sour Cream",
+
+
+    "Water bottle", "Juice bottle", "Soft Drink bottle","Beer bottle", "Wine bottle",
+    "Liquor bottle", "Tea", "Coffee can", "Energy Drink can", "Soda can",
+
+
     "Bread", "Cereal", "Pasta", "Rice", "Flour",
+
+
     "Sugar", "Salt", "Pepper", "Spices", "Oil",
-    "Tomato Sauce", "Mayonnaise", "Mustard", "Ketchup", "Soy Sauce",
-    "paprika","pak choi","peas","pepper","pineapple","pomegranate","potato","pumpkin","radish","raspberry",
-    "onion","packaged food","egg","coconut","cucumber","butter","carrots",
-    "apple","apricot","asparagus","avocado","banana","basil","beans","beetroot","blackberry","blueberry",
-    "White Egg","egg Carton","Brown Egg","Beer Bottle","Pickle Jar","wine bottle","diced onions"
+
+
+    "Mayonnaise", "Mustard", "Ketchup", "Soy Sauce", "Vinegar",
 ]
 kitchen_items=[item.lower() for item in kitchen_items]
 
-kitchen_items=["lane marking","road barrier","wall","Car","vehicle","truck","motorcycle","human","traffic sign","stoplight","building"]
+#kitchen_items=["lane marking","road barrier","wall","Car","vehicle","truck","motorcycle","human","traffic sign","stoplight","building"]
 model.set_classes(kitchen_items)
 # MSS setup for capturing a specific window
 sct = mss()
@@ -42,8 +57,8 @@ sct = mss()
 def find_window_coordinates():
     # Implement the logic to find your window's coordinates here
     # Example return format: {'top': 0, 'left': 0, 'width': 1920, 'height': 1080}
-    return {'top': 280, 'left': 30, 'width': 850, 'height': 500}
-
+    #return {'top': 280, 'left': 30, 'width': 850, 'height': 500}
+    return {'top': 400, 'left': 20, 'width': 800, 'height': 650}
 # Attempt to find the window and its coordinates (you'll need to implement this)
 window_coordinates = find_window_coordinates()
 

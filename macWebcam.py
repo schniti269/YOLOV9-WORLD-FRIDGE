@@ -1,23 +1,11 @@
 import pyautogui
 import cv2
 import numpy as np
-from ultralytics import YOLOWorld
+import torch
+from ultralytics import YOLOWorld  # This should be adjusted to the correct import for YOLOv8
 
 # Initialize the YOLO model
-model = YOLOWorld('yolov8s-worldv2.pt')
-# Assuming the set_classes method exists and sets the classes for detection
-model.set_classes(["lane marking", "road barrier", "wall", "Car", "vehicle", "truck", "motorcycle", "human", "traffic sign", "stoplight", "building"])
-
-# Function to draw bounding boxes and labels on the frame
-def draw_detections(frame, detections):
-    for det in detections:
-        x1, y1, x2, y2 = int(det['x1']), int(det['y1']), int(det['x2']), int(det['y2'])
-        label = det['label']
-        confidence = det['confidence']
-        # Draw the bounding box
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        # Put the label and confidence
-        cv2.putText(frame, f"{label} {confidence:.2f}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+model = YOLOWorld('yolov8s-worldv2.pt')  # Adjust the model path and initialization as needed
 
 # Function to capture a specific region of the screen
 def capture_screen_region(x, y, width, height):
@@ -26,25 +14,37 @@ def capture_screen_region(x, y, width, height):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     return frame
 
-x, y, width, height = 100, 100, 600, 400  # Example values
+# Function to draw bounding boxes and labels on the frame
+def draw_detections(frame, detections, classes):
+    height, width, _ = frame.shape
+    for *xyxy, conf, cls in detections:
+        label = classes[int(cls)]
+        x1, y1, x2, y2 = [int(xy) for xy in xyxy]  # Scale coordinates if necessary
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        cv2.putText(frame, f"{label} {conf:.2f}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+x, y, width, height = 100, 100, 600, 400  # Example region coordinates
 
 try:
     while True:
         captured_image = capture_screen_region(x, y, width, height)
+        # Convert BGR to RGB
+        captured_image_rgb = cv2.cvtColor(captured_image, cv2.COLOR_BGR2RGB)
+        # Convert to tensor and add batch dimension
+        img_tensor = torch.from_numpy(captured_image_rgb).permute(2, 0, 1).unsqueeze(0).float()
+        img_tensor /= 255.0  # Normalize to [0, 1]
 
-        # Convert captured image to the format expected by your model if necessary
         # Apply the model to the captured image
-        results = model(captured_image)  # This step is hypothetical and depends on your actual model API
+        results = model(img_tensor)
 
-        # Process the results to match the expected format for draw_detections
-        # This is a placeholder and needs to be adapted based on your model's output
-        detections = [{"x1": det.x1, "y1": det.y1, "x2": det.x2, "y2": det.y2, "label": det.label, "confidence": det.confidence} for det in results]
+        # Extract detections (adjust indexing based on your model's output structure)
+        detections = results.xyxy[0]  # Detections in xyxy format
 
         # Draw detections on the image
-        draw_detections(captured_image, detections)
+        draw_detections(captured_image, detections, model.names)
 
         # Display the frame
-        cv2.imshow('Screen Capture with Detections', captured_image)
+        cv2.imshow('Screen Capture with Detections', cv2.cvtColor(captured_image, cv2.COLOR_RGB2BGR))
 
         # Break the loop by pressing 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):

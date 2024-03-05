@@ -15,7 +15,7 @@ kitchen_items = [
     "Banana","Lemon","Orange","Grapes", "Mango","Apple","Pineapple",
     "Avocado","Cherry","Strawberry","Watermelon","Peach",
 
-    "Lettuce", "Tomato", "Mushroom", "Zucchini", "Potato",
+    "Lettuce", "Tomato", "Mushroom", "Zucchini", "Potato","Sweet Potato",
     "Carrot", "Cucumber", "Bell Pepper", "Onion", "Garlic",
     "Eggplant", "Broccoli", "Cauliflower", "Spinach", "Cabbage",
     "Asparagus", "Green Beans", "Peas", "Corn", "Celery",
@@ -26,13 +26,17 @@ kitchen_items = [
     "ground-meat",
 
     "Milk", "Cheese", "Butter", "Yogurt", "Sour Cream",
+    "Cream Cheese", "Egg", "Cottage Cheese", "Whipped Cream",
+
+    "egg carton", "Milk carton", "Juice carton",
+    "Food Can", "packaged food", "Cereal Box", "Cereal Bag",
 
 
     "Water bottle", "Juice bottle", "Soft Drink bottle","Beer bottle", "Wine bottle",
     "Liquor bottle", "Tea", "Coffee can", "Energy Drink can", "Soda can",
 
 
-    "Bread", "Cereal", "Pasta", "Rice", "Flour",
+    "Bread", "Cereal", "Noodles", "Rice", "Flour",
 
 
     "Sugar", "Salt", "Pepper", "Spices", "Oil",
@@ -73,7 +77,7 @@ try:
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         # Perform inference
-        results = model.infer(frame, confidence=0.1, iou=0.03, visualize=True)
+        results = model.infer(frame, confidence=0.05, iou=0.01,half=True,device=0,agnostic_nms=True,)
 
         # Convert results to detections
         detections = sv.Detections.from_inference(results)

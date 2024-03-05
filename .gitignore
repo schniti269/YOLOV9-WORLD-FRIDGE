@@ -2,3 +2,15 @@
 .myenv
 
 /myenv
+
+CookMyFridge/.DS_Store
+node_modules
+CookMyFridge//build
+CookMyFridge/.svelte-kit
+CookMyFridge/package
+CookMyFridge/.env
+CookMyFridge/.env.*
+!CookMyFridge/.env.example
+CookMyFridge/vite.config.js.timestamp-*
+CookMyFridge/vite.config.ts.timestamp-*
+CookMyFridge/node_modules

@@ -1,0 +1,42 @@
+@startuml
+
+class FridgeApp {
+    +predictContent(): void
+    +suggestRecipes(): void
+}
+
+class Admin{
+    +modifyClasses(): void
+}
+
+class User {
+    +favoriteRecipe(): void
+}
+
+class Recipe {
+    -name: String
+    -ingredients: List<String>
+    -instructions: String
+    +getName(): String
+    +getIngredients(): List<String>
+    +getInstructions(): String
+}
+
+class Model{
+    -cfthreshold: double
+    -weights: Tensorflow.pt
+    -classes: List<String>
+    +predictContent(): List<String>
+    +suggestRecipes(): List<Recipe>
+    +modifyClasses(): void
+    
+
+}
+
+FridgeApp --> Model
+Admin --> Model
+User --> FridgeApp
+User --> Recipe
+Model --> Recipe
+
+@enduml

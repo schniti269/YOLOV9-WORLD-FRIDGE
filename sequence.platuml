@@ -1,0 +1,20 @@
+@startuml
+title Fridge App Sequence Diagram
+
+actor User
+participant FridgeApp
+participant PredictionService
+participant RecipeMatcher
+actor Admin
+
+User -> FridgeApp: Open app
+FridgeApp -> PredictionService: Predict fridge content
+PredictionService -> FridgeApp: Fridge content prediction
+FridgeApp -> RecipeMatcher: Send fridge content
+RecipeMatcher -> FridgeApp: Matched recipes
+FridgeApp -> User: Display matched recipes
+
+User -> Admin: Request model adjustment
+Admin -> FridgeApp: Modify model settings
+FridgeApp -> Admin: Confirmation
+@enduml

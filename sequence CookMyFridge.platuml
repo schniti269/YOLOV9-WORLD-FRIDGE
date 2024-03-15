@@ -1,0 +1,24 @@
+@startuml
+title Cook My Fridge Sequence Diagram
+
+actor User
+participant View
+participant Controller
+participant CVModel
+participant RecipeMatcher
+
+
+User -> View: Open app
+View -> Controller: Sends Image
+Controller -> CVModel: Analyzes Image
+CVModel -> Controller: Returns Ingredients
+
+Controller-> RecipeMatcher: Sends a List of Ingredients
+RecipeMatcher-> Controller: Returns a List of Possible recipes
+
+Controller-> View: update View
+
+View -> User : wait for Input
+
+
+@enduml

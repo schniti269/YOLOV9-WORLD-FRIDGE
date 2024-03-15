@@ -1,0 +1,42 @@
+@startuml
+
+Class User {
+    + id: int
+    + name: string
+    + email: string
+    + password: string
+    - is_admin: boolean
+
+    + login(email: string, password: string): HTTP Only Cookie 
+    + logout(): Delection of Cookie
+}
+
+Class Recipie {
+    + id: int
+    + name: string
+    + instructions: RichText
+
+    + create(name: string, instructions: RichText): Recipie
+    + addIngredient(name: string): Ingredient
+    + removeIngredient(id: int): void
+    + updateInstructions(instructions: RichText): void
+    + updateName(name: string): void
+    + delete(): void
+
+}
+
+class Ingredient {
+    + id: int
+    + name: string
+
+    + updateName(name: string): void
+}
+
+
+
+User "1" *-- "0..n" Recipie
+Recipie "1" *-- "0..n" Ingredient
+
+@enduml
+
+

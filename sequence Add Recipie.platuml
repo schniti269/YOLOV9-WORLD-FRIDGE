@@ -1,0 +1,30 @@
+@startuml
+title Cook My Fridge Sequence Diagram New Recipie
+
+actor User
+participant View
+participant Controller
+participant CVModel
+participant RecipeMatcher
+
+
+User -> View: Open app
+View -> Controller: Add Recipie
+
+Controller -> Controller: Create Object
+
+Controller-> CVModel: Add Ingredients To Database (if not exists)
+CVModel-> Controller
+
+Controller -> Controller: update Object
+
+Controller -> RecipeMatcher: Add to Database
+RecipeMatcher -> Controller
+
+
+Controller -> View: update
+
+View -> User: wait for Input
+
+
+@enduml

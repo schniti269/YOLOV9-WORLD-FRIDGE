@@ -11,18 +11,14 @@
         DropdownHeader,
         DropdownDivider
     } from 'flowbite-svelte';
-    import {writable} from "svelte/store";
+    import {openLoginCard} from "../stores";
 
     let loggedIn = false;
-    export const showLoginCard = writable(false);
-
-    function toggleLoginCard() {
-        showLoginCard.update((prev) => !prev);
-    }
 </script>
 
 <Navbar class="bg-primary text-white">
     <NavBrand href="/">
+        <img src="Logo.webp" alt="CookMyFridge" class="w-8 h-8 mr-2 rounded-3xl"/>
         <span class="self-center whitespace-nowrap text-xl font-semibold text-white">CookMyFridge</span>
     </NavBrand>
     <div class="flex items-center md:order-2">
@@ -45,14 +41,16 @@
                 <span class="block text-sm">Welcome</span>
             </DropdownHeader>
             <DropdownItem on:click={() => {
-                toggleLoginCard();
+                openLoginCard.set(true);
                 loggedIn = true; //temporarily set
-            }}>Sign in</DropdownItem>
+            }}>
+                Sign in
+            </DropdownItem>
         </Dropdown>
     {/if}
     <NavUl>
-        <NavLi href="/" active={true} nonActiveClass="text-white">Home</NavLi>
-        <NavLi href="#" nonActiveClass="text-white">About</NavLi>
-        <NavLi href="#" nonActiveClass="text-white">Contact</NavLi>
+        <NavLi href="/" nonActiveClass="text-white">Home</NavLi>
+        <NavLi href="/MyRecipes" nonActiveClass="text-white">My Recipes</NavLi>
+        <NavLi href="/NewRecipe" nonActiveClass="text-white">New Recipe</NavLi>
     </NavUl>
 </Navbar>

@@ -7,18 +7,23 @@ participant Controller
 participant CVModel
 participant RecipeMatcher
 
-
 User -> View: Open app
+activate View
 View -> Controller: Sends Image
+activate Controller
 Controller -> CVModel: Analyzes Image
+activate CVModel
 CVModel -> Controller: Returns Ingredients
+deactivate CVModel
 
 Controller-> RecipeMatcher: Sends a List of Ingredients
+activate RecipeMatcher
 RecipeMatcher-> Controller: Returns a List of Possible recipes
+deactivate RecipeMatcher
 
 Controller-> View: update View
-
+deactivate Controller
 View -> User : wait for Input
-
+deactivate View
 
 @enduml

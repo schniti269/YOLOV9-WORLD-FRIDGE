@@ -1,10 +1,10 @@
 <script lang="ts">
-    import Navbar from '$lib/navbar.svelte';
-    import LoginCard from '$lib/loginCard.svelte';
+
+    import About from '$lib/about.svelte';
 </script>
 
 <body class="bg-background-600">
-<Navbar />
-<LoginCard />
+
+<About />
 
 </body>

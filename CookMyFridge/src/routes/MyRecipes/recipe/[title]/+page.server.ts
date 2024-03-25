@@ -19,12 +19,17 @@ export const load = async ({fetch, params}) => {
             description: 'Recipe description',
             ingredients: [
                 {name: 'Ingredient 1', amount: '1', unit: 'unit'},
-                {name: 'Ingredient 2', amount: '2', unit: 'unit'}
+                {name: 'Ingredient 2', amount: '2', unit: 'unit'},
+                {name: 'Ingredient 3', amount: '3', unit: 'unit'},
+                {name: 'Ingredient 4', amount: '4', unit: 'unit'}
             ],
             steps: [
                 {description: 'Step 1'},
-                {description: 'Step 2'}
-            ]
+                {description: 'Step 2'},
+                {description: 'Step 3'},
+                {description: 'Step 4'}
+            ],
+            image: '/SampleRecipe.png'
         }
     };
 }

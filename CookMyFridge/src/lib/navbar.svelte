@@ -18,7 +18,7 @@
 
 <Navbar class="bg-primary text-white">
     <NavBrand href="/">
-        <img src="Logo.webp" alt="CookMyFridge" class="w-8 h-8 mr-2 rounded-3xl"/>
+        <img src="/Logo.webp" alt="CookMyFridge" class="w-8 h-8 mr-2 rounded-3xl"/>
         <span class="self-center whitespace-nowrap text-xl font-semibold text-white">CookMyFridge</span>
     </NavBrand>
     <div class="flex items-center md:order-2">

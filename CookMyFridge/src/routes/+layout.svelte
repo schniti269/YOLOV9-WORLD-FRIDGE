@@ -17,6 +17,6 @@
         <LoginCard/>
     {/if}
 
-
     <slot/>
+
 </div>

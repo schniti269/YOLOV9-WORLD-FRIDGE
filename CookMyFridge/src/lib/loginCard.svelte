@@ -4,7 +4,7 @@
     import {InfoCircleSolid} from "flowbite-svelte-icons";
 </script>
 
-<div class="flex items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+<div class="flex items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 showfront">
     <Card>
         <div class="flex items-center">
             <h5 id="drawer-label"
@@ -24,16 +24,24 @@
                 <span>Your password</span>
                 <Input type="password" name="password" placeholder="•••••" required/>
             </Label>
-            <div class="flex items-start">
-                <Checkbox>Remember me</Checkbox>
-                <a href="/" class="ms-auto text-sm text-primary-700 hover:underline dark:text-primary-500"> Lost
-                    password? </a>
-            </div>
             <Button type="submit" class="w-full">Login to your account</Button>
             <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
-                Not registered? <a href="/" class="text-primary-700 hover:underline dark:text-primary-500"> Create
-                account </a>
+                Not registered?
+                <a href="/" class="text-primary-700 hover:underline dark:text-primary-500">
+                    Create account
+                </a>
             </div>
         </form>
     </Card>
 </div>
+
+<style>
+    .showfront {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1000;
+    }
+</style>

@@ -10,10 +10,13 @@
 
 <Navbar/>
 
-{#if showLoginCard}
-    <LoginCard/>
-{/if}
 
 <div class="min-h-screen min-w-screen bg-background-600">
+
+    {#if showLoginCard}
+        <LoginCard/>
+    {/if}
+
+
     <slot/>
 </div>

@@ -1,6 +1,6 @@
 <script>
     import {Card, Button, Label, Input, Checkbox, CloseButton} from 'flowbite-svelte';
-    import {openLoginCard} from "../stores";
+    import {openLoginCard} from "../stores.ts";
     import {InfoCircleSolid} from "flowbite-svelte-icons";
 </script>
 

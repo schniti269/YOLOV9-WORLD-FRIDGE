@@ -11,7 +11,7 @@
         DropdownHeader,
         DropdownDivider
     } from 'flowbite-svelte';
-    import {openLoginCard} from "../stores.ts";
+    import {openLoginCard} from "../stores";
 
     let loggedIn = false;
 </script>

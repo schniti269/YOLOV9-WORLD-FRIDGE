@@ -105,11 +105,11 @@
                                 {#each ingredients as ingredient, i (i)}
                                     <li>
                                         <input type="text" name="ingredient_amount" bind:value="{ingredient.amount}"
-                                               class="w-10 p-1 rounded-xl text-black"/>
+                                               class="w-10 p-1 rounded text-black"/>
                                         <input type="text" name="ingredient_unit" bind:value="{ingredient.unit}"
-                                               class="w-16 p-1 rounded-xl text-black"/>
+                                               class="w-16 p-1 rounded text-black"/>
                                         <input type="text" name="ingredient_name" bind:value="{ingredient.name}"
-                                               class="w-fit p-1 rounded-xl text-black"/>
+                                               class="w-fit p-1 rounded text-black"/>
                                     </li>
                                 {/each}
                                 <button type="button" on:click={() => (addIngredient())}>+ Add Ingredient</button>

@@ -16,8 +16,8 @@ model = YOLOWorld(model_id="yolo_world/l")
 
 
 db=next(get_db())
-classes= db.query(Ingredient).all()
-classes=[i.name for i in classes]
+ingredients = db.query(Ingredient).all()
+classes = [ingredient.name for ingredient in ingredients]
 
 model.set_classes(classes)
 

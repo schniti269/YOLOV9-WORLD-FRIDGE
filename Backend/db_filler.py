@@ -14,24 +14,26 @@ kitchen_items = [
 ]
 
 def fill_db():
-    db=get_db()
+    
 
     #fill ingredients
-    fill_ingredients(db)
+    fill_ingredients()
 
     #fill recipes
-    fill_recipes(db)
+    fill_recipes()
 
+    
+
+
+
+def fill_ingredients():
+    db=next(get_db())
+    for item in kitchen_items:
+        ingredient=Ingredient(name=item, recipes=[])
+        db.add(ingredient)
     db.commit()
 
-
-
-def fill_ingredients(db):
-    for item in kitchen_items:
-        db.add(Ingredient(name=item))
-
-
-def fill_recipes(db):
+def fill_recipes():
     """
     class Recipe(Base):
     __tablename__ = "recipies"

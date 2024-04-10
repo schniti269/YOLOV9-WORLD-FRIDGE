@@ -3,6 +3,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.types import PickleType
 
+import base64
+
+
+
 DATABASE_URL = "sqlite:///./db.db?check_same_thread=False"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -24,13 +28,13 @@ class User(Base):
 
 
 class Recipe(Base):
-    __tablename__ = "recipies"
+    __tablename__ = "recipes"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     description = Column(String)
     instructions = Column(String)
     ingredients = Column(PickleType)
-    image = Column(PickleType)
+    image64 = Column(PickleType)
 
 class Ingredient(Base):
     __tablename__ = "ingredients"
@@ -38,8 +42,15 @@ class Ingredient(Base):
     name = Column(String, index=True)
     recipes = Column(PickleType)
 
+def image_to_base64(image):
+    with open(image, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode('utf-8')
+    
+    
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
+
 
     from db_filler import fill_db
     fill_db()

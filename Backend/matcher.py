@@ -1,4 +1,4 @@
-from db import get_db, User, Recipe, Ingredient
+from db import get_db, User, Recipe, Ingredient, image_to_base64
 import pandas as pd
 
 db = next(get_db())
@@ -30,9 +30,12 @@ def match(items: pd.DataFrame):
 
    
 
-def add_recipe(name, description, instructions, ingredients, image):
+def add_recipe(name, description, instructions, ingredients, path_image):
+
+    base64_image = image_to_base64(path_image)
+    
     db = next(get_db())
-    recipe = Recipe(name=name, description=description, instructions=instructions, ingredients=ingredients, image=image)
+    recipe = Recipe(name=name, description=description, instructions=instructions, ingredients=ingredients, image64=base64_image)
     db.add(recipe)
     db.commit()
 
@@ -43,11 +46,14 @@ def add_recipe(name, description, instructions, ingredients, image):
         ingredient = db.query(Ingredient).filter(Ingredient.name == ingredient).first()
         if ingredient is None:
             ctr+=1
-            ingredient = Ingredient(name=ingredient)
+            ingredient = Ingredient(name=ingredient, recipes=[])
             db.add(ingredient)
             db.commit()
         
-        ingredient.recipes.append(recipe)
+        recipies= ingredient.recipes
+        #cast to list
+        recipies.append(recipe)
+        ingredient.recipes=recipies
         db.commit()
     
     return recipe , "Recipe added successfully", f"learning {ctr} new ingredients"

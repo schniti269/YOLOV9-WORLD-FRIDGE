@@ -4,6 +4,10 @@ from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.config import Config
+from jose import jwt
+from datetime import datetime, timedelta
+
+from starlette.responses import Response
 
 from db import get_db, User, Recipe
 
@@ -36,7 +40,7 @@ async def login(request: Request):
     return await oauth.github.authorize_redirect(request, redirect_uri)
 
 @app.get("/oauth/callback")
-async def auth(request: Request, db=Depends(get_db)):
+async def auth(request: Request, response: Response, db=Depends(get_db)):
     # GitHub redirects back here after login
     try:
         token = await oauth.github.authorize_access_token(request)
@@ -54,10 +58,17 @@ async def auth(request: Request, db=Depends(get_db)):
         user = User(oauth_id=user_info['id'],username=user_info['login'])
         db.add(user)
         db.commit()
-    
-        return "Created",{"username": user_info['login'], "user_id": user_info['id']}
-    else:
-        return "Logged in",{"username": user_info['login'], "user_id": user_info['id']}
+
+    # Save user with auth cookie
+    jwt_user = {
+        "user_id": user.oauth_id,
+        "exp": datetime.now() + timedelta(minutes=30)
+    }
+    token = jwt.encode(jwt, "secret", algorithm="HS256")
+    response.set_cookie(key="user", value=str(token), httponly=True, max_age=1800,secure=True)
+    return "Created",{"username": user_info['login'], "user_id": user_info['id']}
+
+
 
 
 if __name__ == "__main__":

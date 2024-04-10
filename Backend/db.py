@@ -32,7 +32,14 @@ class Recipe(Base):
     ingredients = Column(PickleType)
     image = Column(PickleType)
 
+class Ingredient(Base):
+    __tablename__ = "ingredients"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    recipes = Column(PickleType)
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
-    print("Database created")
-    print("Exiting")
+
+    from db_filler import fill_db
+    fill_db()

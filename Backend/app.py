@@ -6,6 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.config import Config
 from jose import jwt
 from datetime import datetime, timedelta
+import pandas as pd
 
 import base64
 
@@ -155,7 +156,15 @@ async def get_user_recipes(user: int = Depends(cookie_auth), db=Depends(get_db))
 
 
 @app.get("/match")
-async def get_matches(image: image64, db=Depends(get_db)):
+async def get_matches(items, db=Depends(get_db)):
+    #match
+    df= pd.DataFrame(items)
+    
+    matches = match(df)
+    return matches
+
+@app.get("/scan")
+async def scan_fridge(image: image64, db=Depends(get_db)):
     #convert image to base64
     base64_image = image.image64
     #convert to PIL
@@ -163,24 +172,13 @@ async def get_matches(image: image64, db=Depends(get_db)):
 
     #run inference
     items, annotated_image = run_inference_on_image(image)
-    
-
-    #match
-    matches = match(items)
-
     base64_image = base64.b64encode(annotated_image).decode('utf-8')
-    return matches, base64_image
-
-
-
-
-
-
-
-
+    
+    return items, base64_image
 
 
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

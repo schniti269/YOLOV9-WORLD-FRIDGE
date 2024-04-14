@@ -5,7 +5,7 @@ DateTime = datetime
 from typing import List, Optional
 
 
-class Recipe(BaseModel):
+class RecipeCreate(BaseModel):
     id: int
     name: str
     description: str

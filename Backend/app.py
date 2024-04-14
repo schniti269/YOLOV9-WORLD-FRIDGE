@@ -7,16 +7,18 @@ from starlette.config import Config
 from jose import jwt
 from datetime import datetime, timedelta
 import pandas as pd
+import os
+import cv2
 
 import base64
 
-from models import Recipe, image64
+from models import RecipeCreate, image64
 
 from starlette.responses import Response
 
 from matcher import match, add_recipe
 
-from db import get_db, User, Recipe
+from db import get_db, User, Recipe, Ingredient, image_to_base64
 
 from predictor import run_inference_on_image
 
@@ -114,9 +116,15 @@ async def get_recipe(recipe_id: int, db=Depends(get_db)):
     return recipe
 
 @app.post("/recipes")
-async def add_recipe(recipe: Recipe, user: int = Depends(cookie_auth), db=Depends(get_db)):
+async def add_recipe(recipe: RecipeCreate, user: int = Depends(cookie_auth), db=Depends(get_db)):
     add_recipe(recipe.name, recipe.description, recipe.instructions, recipe.ingredients, recipe.image64)
-    return "Recipe added"
+    #query for the recipe
+    recipe = db.query(Recipe).filter(Recipe.name == recipe.name).first()
+    #add to user
+    user = db.query(User).filter(User.oauth_id == user).first()
+    user.owned_recipes.append(recipe.id)
+
+    return recipe
 
 
 @app.get("/me/favourite_recipes")
@@ -155,24 +163,36 @@ async def get_user_recipes(user: int = Depends(cookie_auth), db=Depends(get_db))
 
 
 
-@app.get("/match")
+@app.post("/match")
 async def get_matches(items, db=Depends(get_db)):
     #match
     matches = match(items)
     return matches
 
-@app.get("/scan")
+@app.post("/scan")
 async def scan_fridge(image: image64, db=Depends(get_db)):
     #convert image to base64
     base64_image = image.image64
     #convert to PIL
     image = base64.b64decode(base64_image)
 
+    #save image
+    with open("temp.jpg", "wb") as img_file:
+        img_file.write(image)
+    #open as cv2
+    image = cv2.imread("temp.jpg")
+    #remove temp file
+    os.remove("temp.jpg")
+
+
     #run inference
     items, annotated_image = run_inference_on_image(image)
-    base64_image = base64.b64encode(annotated_image).decode('utf-8')
+
+    items = [{"name":name, "count":count} for name,count in items.items()]
+
+
     
-    return items, base64_image
+    return items
 
 
 

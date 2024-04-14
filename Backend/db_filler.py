@@ -46,6 +46,7 @@ def fill_recipes():
 
     from matcher import add_recipe
     imaages_path = "images/"
+    print("filling recipes")
     add_recipe("Banana Bread", "A delicious bread made from bananas", "Mix bananas with flour and bake", ["Bananas", "Flour"], imaages_path+"banana_bread.jpg")
     add_recipe("Blueberry Muffins", "A delicious muffin made from blueberries", "Mix blueberries with flour and bake", ["Blueberries", "Flour"], imaages_path+"aFM5az0.jpg")
     add_recipe("Citrus Salad", "A delicious salad made from citrus fruits", "Mix citrus fruits with lettuce", ["Citrus (Lemons, Oranges)", "Leafy Greens (Spinach, Lettuce)"], imaages_path+"citrus_salad.jpg")
@@ -57,5 +58,7 @@ def fill_recipes():
     add_recipe("Pork Chops", "A delicious dish made from pork", "Cook pork with spices", ["Pork meat", "Spices"], imaages_path+"pork_chops.jpg")
     add_recipe("Egg Salad", "A delicious salad made from eggs", "Boil eggs and mix with mayonnaise", ["Eggs", "Mayonnaise"], imaages_path+"egg_salad.jpg")
     add_recipe("Milkshake", "A delicious drink made from milk", "Blend milk with ice cream", ["Milk", "Ice Cream"], imaages_path+"milkshake.jpg")
+    print("recipes filled")
 
-                    
+if __name__ == "__main__":
+    fill_db()

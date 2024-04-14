@@ -10,17 +10,18 @@ import numpy as np
 
 from db import get_db, User, Recipe, Ingredient
 
-
+print("loading model")
 
 model = YOLOWorld(model_id="yolo_world/l")
-
-
 db=next(get_db())
 ingredients = db.query(Ingredient).all()
-classes = [ingredient.name for ingredient in ingredients]
+classes=[ingredient.name for ingredient in ingredients]
+
+
 
 model.set_classes(classes)
 
+print("model loaded")
 def run_inference_on_image(image: np.ndarray):
     
     results = model.infer(image,confidence=0.1,iou=0.3,visualize=True)

@@ -158,9 +158,7 @@ async def get_user_recipes(user: int = Depends(cookie_auth), db=Depends(get_db))
 @app.get("/match")
 async def get_matches(items, db=Depends(get_db)):
     #match
-    df= pd.DataFrame(items)
-    
-    matches = match(df)
+    matches = match(items)
     return matches
 
 @app.get("/scan")

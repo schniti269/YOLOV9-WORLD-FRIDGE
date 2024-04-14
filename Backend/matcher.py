@@ -1,29 +1,49 @@
 from db import get_db, User, Recipe, Ingredient, image_to_base64
 import pandas as pd
-
+print("loading matcher")
 db = next(get_db())
+print("matcher loaded")
 
 
 
 
-def match(items: pd.DataFrame):
-    matches = []
+def match(items: list):
+
+    matchesid = []
+    #get all recipies that contain ANY items
     for item in items:
         #query the recipes in ingredients
         ingredient = db.query(Ingredient).filter(Ingredient.name == item).first()
         if ingredient is None:
+            #this should not happen ever but just in case
             continue
-        for recipe in ingredient.recipes:
-            matches.append(recipe)
+        for recipeid in ingredient.recipes:
+            matchesid.append(recipeid)
     
-    for recipe in matches:
+    #filter out all where request items cannot fulfill the recipe
+    for recipeid in matchesid:
         #recipie neets to have all 
-        if not all([item in recipe.ingredients for item in items]):
-            matches.remove(recipe)
-
-    if len(matches) == 0:
+        recipe = db.query(Recipe).filter(Recipe.id == recipeid).first()
+        if recipe is None:
+            #this should not happen ever but just in case
+            continue
+        for item in items:
+            if item not in recipe.ingredients:
+                matchesid.remove(recipeid)
+                break
+    
+    if len(matchesid) == 0:
         #todo query list to chat GPT
         pass
+    #remove duplicates
+    matchesid = list(set(matchesid))
+    #ready matches
+    matches = []
+    for recipeid in matchesid:
+        recipe = db.query(Recipe).filter(Recipe.id == recipeid).first()
+        matches.append(recipe)
+    #prepare the response
+    matches = [{"id":recipe.id,"name": recipe.name, "description": recipe.description, "instructions": recipe.instructions, "ingredients": recipe.ingredients,"image":recipe.image64} for recipe in matches]
     
     return matches
 
@@ -31,32 +51,35 @@ def match(items: pd.DataFrame):
    
 
 def add_recipe(name, description, instructions, ingredients, path_image):
-
+    print("adding recipe")
     base64_image = image_to_base64(path_image)
+    print("image converted")
     
     db = next(get_db())
-    recipe = Recipe(name=name, description=description, instructions=instructions, ingredients=ingredients, image64=base64_image)
-    db.add(recipe)
+    dbrecipe = Recipe(name=name, description=description, instructions=instructions, ingredients=ingredients, image64=base64_image)
+    db.add(dbrecipe)
     db.commit()
 
-    #reverse index in ingredients
-    ctr=0
+
     for ingredient in ingredients:
         #query for ingredient
-        ingredient = db.query(Ingredient).filter(Ingredient.name == ingredient).first()
-        if ingredient is None:
+        dbingredient = db.query(Ingredient).filter(Ingredient.name == ingredient).first()#
+
+        ctr=0
+        if dbingredient is None:
             ctr+=1
-            ingredient = Ingredient(name=ingredient, recipes=[])
-            db.add(ingredient)
+            newdbingredient = Ingredient(name=ingredient, recipes=[])
+            db.add(newdbingredient)
             db.commit()
-        
-        recipies= ingredient.recipes
+
+        dbingredient = db.query(Ingredient).filter(Ingredient.name == ingredient).first()
+        recipies=dbingredient.recipes.copy()
         #cast to list
-        recipies.append(recipe)
-        ingredient.recipes=recipies
+        recipies.append(dbrecipe.id)
+        dbingredient.recipes=recipies
         db.commit()
     
-    return recipe , "Recipe added successfully", f"learning {ctr} new ingredients"
+    return dbrecipe , "Recipe added successfully", f"learning {ctr} new ingredients"
 
 def query_recipies_from_LLM(items):
     

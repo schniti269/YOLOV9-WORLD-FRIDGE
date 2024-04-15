@@ -58,6 +58,7 @@ def fill_recipes():
     add_recipe("Pork Chops", "A delicious dish made from pork", "Cook pork with spices", ["Pork meat", "Spices"], imaages_path+"pork_chops.jpg")
     add_recipe("Egg Salad", "A delicious salad made from eggs", "Boil eggs and mix with mayonnaise", ["Eggs", "Mayonnaise"], imaages_path+"egg_salad.jpg")
     add_recipe("Milkshake", "A delicious drink made from milk", "Blend milk with ice cream", ["Milk", "Ice Cream"], imaages_path+"milkshake.jpg")
+    add_recipe("Cheeseburger", "A delicious burger made from cheese", "Cook beef and add cheese", ["Beef meat", "Cheese"], imaages_path+"cheeseburger.jpg")
     print("recipes filled")
 
 if __name__ == "__main__":

@@ -1,15 +1,15 @@
 from fastapi import FastAPI, HTTPException, Depends
 from authlib.integrations.starlette_client import OAuth
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.config import Config
 from jose import jwt
 from datetime import datetime, timedelta
+from typing import List
+from fastapi import Cookie
+
 import pandas as pd
 import os
 import cv2
-
 import base64
 
 from models import RecipeCreate, image64
@@ -24,12 +24,21 @@ from predictor import run_inference_on_image
 
 app = FastAPI()
 
-# Setup Session Middleware with a secret key
-app.add_middleware(SessionMiddleware, secret_key="your_secret_key")
+SECRET_KEY = "hallo"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+#CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Initialize OAuth
 oauth = OAuth()
-
 # Configure GitHub OAuth
 oauth.register(
     name='github',
@@ -43,22 +52,32 @@ oauth.register(
     client_kwargs={'scope': 'user:email'},
 )
 
-def cookie_auth(request: Request):
-    token = request.cookies.get("user")
+
+def cookie_auth(request: Request,cookie: str = Cookie(None, alias='user')):
+    token = cookie
     if token is None:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        print("no token raising HTTPException")
+        raise HTTPException(status_code=401, detail="Unauthorized/no token")
     try:
-        payload = jwt.decode(token, "secret", algorithms=["HS256"])
+        print("decoding token")
+        payload = jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
         user= payload["user_id"]
+        #no user in the token
         if user is None:
+            #this should not happen unless the token is tampered with but just in case
             raise HTTPException(status_code=401, detail="Unauthorized")
-        #db query
+       
+        #check if user exists in the database
         db=next(get_db())
         if db.query(User).filter(User.oauth_id == user).first() is None:
+            #this should not happen unless the token is tampered with but just in case
             raise HTTPException(status_code=401, detail="Unauthorized")
+        
         return user
     except:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        #this should not happen unless the token is tampered with
+        print("error decoding token")
+        raise HTTPException(status_code=401, detail="Unauthorized/invalid token")
 
 @app.get("/login")
 async def login(request: Request):
@@ -91,10 +110,10 @@ async def auth(request: Request, response: Response, db=Depends(get_db)):
         "user_id": user.oauth_id,
         "exp": datetime.now() + timedelta(minutes=30)
     }
-    token = jwt.encode(jwt, "secret", algorithm="HS256")
-    response.set_cookie(key="user", value=str(token), httponly=True, max_age=1800,secure=True)
-    return "Created",{"username": user_info['login'], "user_id": user_info['id']}
 
+    token = jwt.encode(jwt_user, SECRET_KEY, algorithm=ALGORITHM)
+    response.set_cookie("user", token, httponly=True)
+    return "Created",{"username": user_info['login'], "user_id": user_info['id']}
 
 @app.get("/logout")
 async def logout(response: Response):
@@ -102,7 +121,6 @@ async def logout(response: Response):
     return "Logged out"
 
 ###functions
-
 @app.get("/recipes")
 async def get_recipes(db=Depends(get_db)):
     recipes = db.query(Recipe).all()
@@ -123,14 +141,11 @@ async def add_recipe(recipe: RecipeCreate, user: int = Depends(cookie_auth), db=
     #add to user
     user = db.query(User).filter(User.oauth_id == user).first()
     user.owned_recipes.append(recipe.id)
-
     return recipe
-
 
 @app.get("/me/favourite_recipes")
 async def get_user_recipes(user: int = Depends(cookie_auth), db=Depends(get_db)):
     favourites= db.query(User).filter(User.oauth_id == user).first().favourite_recipes
-
     recipes = []
     for recipe in favourites:
         recipe = db.query(Recipe).filter(Recipe.id == recipe).first()
@@ -161,21 +176,18 @@ async def get_user_recipes(user: int = Depends(cookie_auth), db=Depends(get_db))
         recipes.append(recipe)
     return recipes
 
-
-
 @app.post("/match")
-async def get_matches(items, db=Depends(get_db)):
+async def get_matches(items: List[str], db=Depends(get_db)):
     #match
     matches = match(items)
     return matches
 
 @app.post("/scan")
 async def scan_fridge(image: image64, db=Depends(get_db)):
-    #convert image to base64
+    #get from image 64 object
     base64_image = image.image64
     #convert to PIL
     image = base64.b64decode(base64_image)
-
     #save image
     with open("temp.jpg", "wb") as img_file:
         img_file.write(image)
@@ -187,16 +199,11 @@ async def scan_fridge(image: image64, db=Depends(get_db)):
 
     #run inference
     items, annotated_image = run_inference_on_image(image)
+    base64_image = image_to_base64(annotated_image,binary_mode=True)
 
     items = [{"name":name, "count":count} for name,count in items.items()]
-
-
-    
-    return items
-
-
+    return {"items":items ,"image":base64_image}
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

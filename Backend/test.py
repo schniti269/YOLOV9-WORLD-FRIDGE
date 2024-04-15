@@ -5,6 +5,7 @@ def test_get_matches():
     #remove image from the response and print the rest
     for recipe in mymatch:
         recipe.pop("image")
+    print(mymatch)
     
     #get list with only names
     names=[recipe["name"] for recipe in mymatch]

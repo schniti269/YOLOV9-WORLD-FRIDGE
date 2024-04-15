@@ -4,11 +4,8 @@ print("loading matcher")
 db = next(get_db())
 print("matcher loaded")
 
-
-
-
 def match(items: list):
-
+    ####################Get all Recipies for all Ingedients######################
     matchesid = []
     #get all recipies that contain ANY items
     for item in items:
@@ -19,22 +16,28 @@ def match(items: list):
             continue
         for recipeid in ingredient.recipes:
             matchesid.append(recipeid)
-    
+    #######################Filter the Recipies ###################
+    to_remove = []
     #filter out all where request items cannot fulfill the recipe
     for recipeid in matchesid:
         #recipie neets to have all 
+        print(f"checking if {recipeid} is a match")
         recipe = db.query(Recipe).filter(Recipe.id == recipeid).first()
         if recipe is None:
             #this should not happen ever but just in case
             continue
-        for item in items:
-            if item not in recipe.ingredients:
-                matchesid.remove(recipeid)
+
+        print(recipe.ingredients)
+        for item in recipe.ingredients:
+            if item not in items:
+                to_remove.append(recipeid)
+                print(f"removed {recipeid}")
+                print(f" beacause of {item} not in {items}")
                 break
-    
-    if len(matchesid) == 0:
-        #todo query list to chat GPT
-        pass
+    #######################Prepare the response###################
+    #remove the ones that are not a match
+    for recipeid in to_remove:
+        matchesid.remove(recipeid)
     #remove duplicates
     matchesid = list(set(matchesid))
     #ready matches
@@ -44,7 +47,6 @@ def match(items: list):
         matches.append(recipe)
     #prepare the response
     matches = [{"id":recipe.id,"name": recipe.name, "description": recipe.description, "instructions": recipe.instructions, "ingredients": recipe.ingredients,"image":recipe.image64} for recipe in matches]
-    
     return matches
 
 
@@ -80,15 +82,3 @@ def add_recipe(name, description, instructions, ingredients, path_image):
         db.commit()
     
     return dbrecipe , "Recipe added successfully", f"learning {ctr} new ingredients"
-
-def query_recipies_from_LLM(items):
-    
-
-    task="You are supposed to behave like an API You can only return a JSON object"
-    promt=task+"I have "+", ".join(items)+" what can I cook with this?"
-    instructions= promt+"Return your Suggestions in the format of JSON {\"name\":\"name\",\"description\":\"description\",\"instructions\":\"instructions\",\"ingredients\":[\"ingredient1\",\"ingredient2\"]}"
-
-    #todo query list to chat GPT
-    pass
-
-

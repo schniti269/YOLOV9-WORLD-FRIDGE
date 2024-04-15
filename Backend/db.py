@@ -2,10 +2,9 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.types import PickleType
+import cv2
 
 import base64
-
-
 
 DATABASE_URL = "sqlite:///./db.db?check_same_thread=False"
 engine = create_engine(DATABASE_URL)
@@ -26,7 +25,6 @@ class User(Base):
     favourite_recipes = Column(PickleType)
     owned_recipes = Column(PickleType)
 
-
 class Recipe(Base):
     __tablename__ = "recipes"
     id = Column(Integer, primary_key=True, index=True)
@@ -42,15 +40,14 @@ class Ingredient(Base):
     name = Column(String, index=True)
     recipes = Column(PickleType)
 
-def image_to_base64(image):
+def image_to_base64(image,binary_mode=False):
+    if binary_mode:
+        cv2.imwrite("temp.jpg", image)
+        image = "temp.jpg"
     with open(image, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode('utf-8')
     
-    
-
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
-
-
     from db_filler import fill_db
     fill_db()

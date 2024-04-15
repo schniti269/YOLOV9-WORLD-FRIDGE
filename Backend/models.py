@@ -6,7 +6,6 @@ from typing import List, Optional
 
 
 class RecipeCreate(BaseModel):
-    id: int
     name: str
     description: str
     instructions: str

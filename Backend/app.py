@@ -28,8 +28,10 @@ SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+
 # Add OAuth middleware
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+
 # Initialize OAuth
 oauth = OAuth()
 # Configure GitHub OAuth

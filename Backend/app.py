@@ -28,15 +28,7 @@ SECRET_KEY = "hallo"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-#CORSMiddleware
-from fastapi.middleware.cors import CORSMiddleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 # Initialize OAuth
 oauth = OAuth()
 # Configure GitHub OAuth

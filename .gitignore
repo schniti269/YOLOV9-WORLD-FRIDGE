@@ -15,4 +15,7 @@ CookMyFridge/vite.config.js.timestamp-*
 CookMyFridge/vite.config.ts.timestamp-*
 CookMyFridge/node_modules
 
-./Backend/images
+Backend/images
+Backend/__pycache__
+
+.idea

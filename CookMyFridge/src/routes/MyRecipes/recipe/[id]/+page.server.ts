@@ -70,7 +70,7 @@ export const actions = {
 export const load = async ({fetch, params}) => {
     console.log(params);
     const fetchRecipe = async () => {
-        const response = await fetch(`/api/recipe/${params.id}`, { method: 'GET' });
+        const response = await fetch(`http:0.0.0.0:8000/recipes/${params.id}`, { method: 'GET' });
         const data = await response.json();
         if (data.recipe) {
             return {

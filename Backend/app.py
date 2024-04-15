@@ -24,19 +24,12 @@ from predictor import run_inference_on_image
 
 app = FastAPI()
 
-SECRET_KEY = "hallo"
+SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-#CORSMiddleware
-from fastapi.middleware.cors import CORSMiddleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Add OAuth middleware
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 # Initialize OAuth
 oauth = OAuth()
 # Configure GitHub OAuth

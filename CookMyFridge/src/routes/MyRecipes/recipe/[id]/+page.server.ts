@@ -1,9 +1,9 @@
 import type {Actions} from "@sveltejs/kit";
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'http://0.0.0.0:8000';
 
 export const actions = {
-    updateRecipe: async ({request, fetch}) => {
+    updateRecipe: async ({request, fetch, params}) => {
         try {
             const formData = await request.formData();
 
@@ -35,7 +35,7 @@ export const actions = {
                 steps
             };
 
-            const response = await fetch(`${API_URL}/api/recipe`, {
+            const response = await fetch(`${API_URL}/api/recipe/${params.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ export const actions = {
 
     deleteRecipe: async ({fetch, params}) => {
         try {
-            const response = await fetch(`${API_URL}/api/recipe/${params.title}`, {method: 'DELETE'});
+            const response = await fetch(`${API_URL}/api/recipe/${params.id}`, {method: 'DELETE'});
             if (response.ok) {
                 return {status: 200, message: 'Recipe deleted'};
             } else {
@@ -68,8 +68,9 @@ export const actions = {
 } satisfies Actions;
 
 export const load = async ({fetch, params}) => {
-    /*const fetchRecipe = async () => {
-        const response = await fetch(`/api/recipe/${params.title}`, { method: 'GET' });
+    console.log(params);
+    const fetchRecipe = async () => {
+        const response = await fetch(`/api/recipe/${params.id}`, { method: 'GET' });
         const data = await response.json();
         if (data.recipe) {
             return {
@@ -79,7 +80,7 @@ export const load = async ({fetch, params}) => {
         } else {
             return { status: 404, message: 'Recipe not found', recipe: {} };
         }
-    };*/
+    };
 
     return {
         //recipe: fetchRecipe()

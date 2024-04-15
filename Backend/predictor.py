@@ -6,62 +6,51 @@ from inference.models.yolo_world.yolo_world import YOLOWorld
 
 import pandas as pd
 import os
+import numpy as np
+import matplotlib.pyplot as plt
 
-# Path to the image
-#get the  newest .jpg file in the folder
-files=os.listdir()
+from db import get_db, User, Recipe, Ingredient
 
-images=[]
-for file in files:
-    if file.endswith(".jpeg"):
-        images.append(file)
-        break
-
-#sort the list of images
-images.sort(key=os.path.getmtime)
-SOURCE_IMAGE_PATH = images[-1]
+print("loading model")
 
 model = YOLOWorld(model_id="yolo_world/l")
+db=next(get_db())
+ingredients = db.query(Ingredient).all()
+classes=[ingredient.name for ingredient in ingredients]
 
 
-kitchen_items = [
-    "Bananas", "Blueberries", "Citrus (Lemons, Oranges)", "Grapes", "Mangoes",
-    "Leafy Greens (Spinach, Lettuce)", "Tomatoes", "Mushrooms", "Zucchini", "Potatoes",
-    "Chicken meat", "Beef meat", "Fish meat", "Pork meat", "Eggs",
-    "Milk", "Cheese", "Butter", "Yogurt", "Cream",
-    "Water", "Juices", "Soft Drinks", "Beer", "Wine",
-    "Bread", "Cereal", "Pasta", "Rice", "Flour",
-    "Sugar", "Salt", "Pepper", "Spices", "Oil",
-    "Tomato Sauce", "Mayonnaise", "Mustard", "Ketchup", "Soy Sauce",
-    "paprika","pak choi","peas","pepper","pineapple","pomegranate","potato","pumpkin","radish","raspberry",
-    "onion","packaged food","egg","coconut","cucumber","butter","carrots"
-]
-
-classes= kitchen_items
 
 model.set_classes(classes)
 
-image = cv2.imread(SOURCE_IMAGE_PATH)
-results = model.infer(image,confidence=0.1,iou=0.3,visualize=True)
+print("model loaded")
+def run_inference_on_image(image):
+    
+    results = model.infer(image,confidence=0.1,iou=0.3)
 
-detections = sv.Detections.from_inference(results)
-BOUNDING_BOX_ANNOTATOR = sv.BoundingBoxAnnotator(thickness=2)
-LABEL_ANNOTATOR = sv.LabelAnnotator(text_thickness=1, text_scale=0.5, text_color=sv.Color.BLACK)
-annotated_image = image.copy()
-annotated_image = BOUNDING_BOX_ANNOTATOR.annotate(annotated_image, detections)
-annotated_image = LABEL_ANNOTATOR.annotate(annotated_image, detections)
-sv.plot_image(annotated_image, (10, 10))
+    detections = sv.Detections.from_inference(results)
+    BOUNDING_BOX_ANNOTATOR = sv.BoundingBoxAnnotator(thickness=2)
+    LABEL_ANNOTATOR = sv.LabelAnnotator(text_thickness=1, text_scale=0.5, text_color=sv.Color.BLACK)
+    annotated_image = image.copy()
+    annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_RGB2BGR)
+    annotated_image = BOUNDING_BOX_ANNOTATOR.annotate(annotated_image, detections)
+    annotated_image = LABEL_ANNOTATOR.annotate(annotated_image, detections)
 
+    annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
+    
+    
+    #apply names from the classes list
+    #new collumn with the names
+    namesdf=pd.DataFrame()
 
+    for i in range(len(detections.class_id)):
+        namesdf=namesdf._append([classes[detections.class_id[i]]])
 
+    #count how many per class
+    namesdf=namesdf.value_counts()
 
-#apply names from the classes list
-#new collumn with the names
-namesdf=pd.DataFrame()
+    #make it set
+    myDict = namesdf.to_dict()
 
-for i in range(len(detections.class_id)):
-    namesdf=namesdf._append([classes[detections.class_id[i]]])
+    
+    return myDict,annotated_image
 
-#count how many per class
-namesdf=namesdf.value_counts()
-print(namesdf)

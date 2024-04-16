@@ -16,22 +16,10 @@
     let editMode = false;
     recipeEditMode.subscribe(value => editMode = value);
 
-    let ingredients: {
-        amount: string,
-        unit: string,
-        name: string
-    }[] = data.recipe.ingredients;
-
-    let steps: {
-        description: string
-    }[] = data.recipe.steps;
+    let ingredients: string[] = data.recipe.recipe.ingredients;
 
     function addIngredient() {
-        ingredients = [...ingredients, {amount: "", unit: "", name: ""}];
-    }
-
-    function addStep() {
-        steps = [...steps, {description: ""}];
+        ingredients = [...ingredients, ""];
     }
 </script>
 
@@ -43,7 +31,7 @@
             <button on:click={() => (goto("/MyRecipes"))}>
                 <ArrowLeftSolid class="w-10 h-10 rounded-3xl border-2"/>
             </button>
-            <h1 class="text-4xl">Recipe: {data.recipe.title}</h1>
+            <h1 class="text-4xl">Recipe: {data.recipe.recipe.name}</h1>
             <div>
                 <button type="button">
                     <HeartOutline class="w-10 h-10 rounded-3xl border-2 bg-red-600 p-1" color="white"/>
@@ -68,7 +56,7 @@
             <form method="POST" action="?/updateRecipe">
 
                 <!-- Displaying a message if the recipe was not found -->
-                {#if data.recipe.status === 404}
+                {#if data.recipe.status !== 200}
                     <div class="text-center">
                         <h2 class="text-2xl">{data.recipe.message}</h2>
                     </div>
@@ -78,14 +66,14 @@
                 <div>
                     {#if editMode}
                         <label for="title" class="text-xl font-bold">Title:</label>
-                        <input type="text" id="title" name="title" value="{data.recipe.title}"
+                        <input type="text" id="name" name="name" value="{data.recipe.recipe.name}"
                                class="w-full p-2 rounded-xl text-black mb-2"/>
 
                         <label for="description" class="text-xl font-bold">Description:</label>
-                        <input type="text" id="description" name="description" value="{data.recipe.description}"
+                        <input type="text" id="description" name="description" value="{data.recipe.recipe.description}"
                                class="w-full p-2 rounded-xl text-black"/>
                     {:else}
-                        <h2>{data.recipe.title}: {data.recipe.description}</h2>
+                        <h2>{data.recipe.recipe.name}: {data.recipe.recipe.description}</h2>
                     {/if}
                 </div>
 
@@ -94,7 +82,8 @@
 
                     <!-- Displaying the image of the recipe -->
                     <div class="pr-6">
-                        <img src="{data.recipe.image}" alt="{data.recipe.title}" class="w-52 rounded-xl">
+                        <img src={"data:image/jpg;base64," + data.recipe.recipe.image64} alt="{data.recipe.recipe.name}"
+                             class="w-52 rounded-xl">
                     </div>
 
                     <!-- Displaying the ingredients of the recipe -->
@@ -104,20 +93,16 @@
                             <ul>
                                 {#each ingredients as ingredient, i (i)}
                                     <li>
-                                        <input type="text" name="ingredient_amount" bind:value="{ingredient.amount}"
-                                               class="w-10 p-1 rounded text-black"/>
-                                        <input type="text" name="ingredient_unit" bind:value="{ingredient.unit}"
-                                               class="w-16 p-1 rounded text-black"/>
-                                        <input type="text" name="ingredient_name" bind:value="{ingredient.name}"
-                                               class="w-fit p-1 rounded text-black"/>
+                                        <input type="text" name="ingredient" bind:value="{ingredient}"
+                                               class="p-1 rounded text-black"/>
                                     </li>
                                 {/each}
                                 <button type="button" on:click={() => (addIngredient())}>+ Add Ingredient</button>
                             </ul>
                         {:else}
                             <ul>
-                                {#each data.recipe.ingredients as ingredient}
-                                    <li>{ingredient.amount} {ingredient.unit} {ingredient.name}</li>
+                                {#each data.recipe.recipe.ingredients as ingredient}
+                                    <li>{ingredient}</li>
                                 {/each}
                             </ul>
                         {/if}
@@ -128,21 +113,10 @@
                 <div>
                     <h3 class="text-xl font-bold pb-1">Zubereitung</h3>
                     {#if editMode}
-                        <ol>
-                            {#each steps as step, i (i)}
-                                <li>
-                                    <input type="text" name="step_description" bind:value="{step.description}"
-                                           class="w-full p-2 rounded-xl text-black"/>
-                                </li>
-                            {/each}
-                            <button type="button" on:click={() => (addStep())}>+ Add Step</button>
-                        </ol>
+                        <input type="text" name="instructions" bind:value="{data.recipe.recipe.instructions}"
+                               class="w-full p-2 rounded-xl text-black"/>
                     {:else}
-                        <ol>
-                            {#each data.recipe.steps as step}
-                                <li>{step.description}</li>
-                            {/each}
-                        </ol>
+                        <p>{data.recipe.recipe.instructions}</p>
                     {/if}
                 </div>
 

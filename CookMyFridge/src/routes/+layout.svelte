@@ -2,7 +2,7 @@
     import "../app.css";
     import Navbar from "$lib/navbar.svelte";
     import LoginCard from "$lib/loginCard.svelte";
-    import {openLoginCard} from "../stores.ts";
+    import {openLoginCard} from "../stores";
 
     let showLoginCard = false;
     openLoginCard.subscribe(value => (showLoginCard = value));

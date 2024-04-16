@@ -1,4 +1,9 @@
+/**
+ * This function is responsible for loading recipes from the server.
+ * It uses the fetch API to make a GET request to the server.
+ */
 export const load = async ({fetch}) => {
+
     const fetchRecipes = async () => {
         try {
             const response = await fetch('http://0.0.0.0:8000/recipes', {method: 'GET'});

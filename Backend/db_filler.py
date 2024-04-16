@@ -44,7 +44,7 @@ def fill_recipes():
     add_recipe("Filled Peppers", "A delicious dish made from peppers", "Cook peppers with meat", ["Peppers", "Beef meat"], imaages_path+"filled_peppers.jpg")
     add_recipe("Tomato Soup", "A delicious soup made from tomatoes", "Cook tomatoes with spices", ["Tomatoes"], imaages_path+"tomato_soup.jpg")
     add_recipe("Mushroom Risotto", "A delicious risotto made from mushrooms", "Cook mushrooms with rice", ["Mushrooms"], imaages_path+"mushroom_risotto.jpg")
-    add_recipe("Orange Chicken", "A delicious dish made from chicken", "Cook chicken with orange sauce", ["Chicken meat", "Oranges"], imaages_path+"orange_chicken.jpg")
+    add_recipe("Orange Chicken", "A delicious dish made from chicken", "Cook chicken with orange sauce", ["Chicken meat", "Citrus (Lemons, Oranges)"], imaages_path+"orange_chicken.jpg")
     add_recipe("Oven Baked Potatoes", "A delicious dish made from potatoes", "Bake potatoes with spices", ["Potatoes","Yogurt"], imaages_path+"oven_potatoe.jpg")
     add_recipe("Baked Pumpkin", "A delicious dish made from pumpkin", "Bake pumpkin with spices", ["Pumpkin"], imaages_path+"baked_pumpkin.jpg")
 

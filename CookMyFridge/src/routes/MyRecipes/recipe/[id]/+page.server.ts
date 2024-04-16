@@ -5,37 +5,22 @@ const API_URL = 'http://0.0.0.0:8000';
 export const actions = {
     updateRecipe: async ({request, fetch, params}) => {
         try {
-            const formData = await request.formData();
-
-            const title = formData.get('title');
-            const description = formData.get('description');
-
-            // Construct the ingredients array manually
-            const ingredients = [];
-            for (let i = 0; i < formData.getAll('ingredient_name').length; i++) {
-                ingredients.push({
-                    name: formData.getAll('ingredient_name')[i],
-                    amount: formData.getAll('ingredient_amount')[i],
-                    unit: formData.getAll('ingredient_unit')[i]
-                });
-            }
-
-            // Construct the steps array manually
-            const steps = [];
-            for (let i = 0; i < formData.getAll('step_description').length; i++) {
-                steps.push({
-                    description: formData.getAll('step_description')[i]
-                });
-            }
-
-            const recipe = {
-                title,
+            const {
+                name,
                 description,
                 ingredients,
-                steps
-            };
+                instructions
+            } = Object.fromEntries(await request.formData());
 
-            const response = await fetch(`${API_URL}/api/recipe/${params.id}`, {
+            const recipe = {
+                name,
+                description,
+                ingredients,
+                instructions
+            };
+            console.log(recipe);
+
+            const response = await fetch(`${API_URL}/recipe/${params.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -68,14 +53,13 @@ export const actions = {
 } satisfies Actions;
 
 export const load = async ({fetch, params}) => {
-    console.log(params);
     const fetchRecipe = async () => {
-        const response = await fetch(`http:0.0.0.0:8000/recipes/${params.id}`, { method: 'GET' });
-        const data = await response.json();
-        if (data.recipe) {
+        const response = await fetch(`http://0.0.0.0:8000/recipes/${params.id}`, { method: 'GET' });
+        if (response.ok) {
+            const data = await response.json();
             return {
                 status: 200,
-                recipe: data.recipe
+                recipe: await data
             };
         } else {
             return { status: 404, message: 'Recipe not found', recipe: {} };
@@ -83,25 +67,6 @@ export const load = async ({fetch, params}) => {
     };
 
     return {
-        //recipe: fetchRecipe()
-        recipe: {
-            title: 'Recipe title',
-            description: 'Recipe description',
-            ingredients: [
-                {name: 'Ingredient 1', amount: '1', unit: 'unit'},
-                {name: 'Ingredient 2', amount: '2', unit: 'unit'},
-                {name: 'Ingredient 3', amount: '3', unit: 'unit'},
-                {name: 'Ingredient 4', amount: '4', unit: 'unit'}
-            ],
-            steps: [
-                {description: 'Step 1'},
-                {description: 'Step 2'},
-                {description: 'Step 3'},
-                {description: 'Step 4'}
-            ],
-            image: '/SampleRecipe.png',
-            status: 200,
-            message: 'Recipe found'
-        }
+        recipe: await fetchRecipe()
     };
 }

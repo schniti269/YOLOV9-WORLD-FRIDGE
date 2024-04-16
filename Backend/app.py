@@ -14,7 +14,7 @@ import base64
 
 from models import RecipeCreate, image64
 
-from starlette.responses import Response
+from starlette.responses import Response, RedirectResponse
 
 from matcher import match, add_recipe
 
@@ -113,7 +113,9 @@ async def auth(request: Request, response: Response, db=Depends(get_db)):
 
     token = jwt.encode(jwt_user, SECRET_KEY, algorithm=ALGORITHM)
     response.set_cookie("user", token, httponly=True)
-    return "Created",{"username": user_info['login'], "user_id": user_info['id']}
+
+    # Redirect the user to the specified URL
+    return RedirectResponse(url='http://localhost:5173/')
 
 @app.get("/logout")
 async def logout(response: Response):

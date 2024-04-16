@@ -3,57 +3,29 @@
 
     let search = '';
 
-    let recipes = [
-        {
-            title: 'Pancakes',
-            time: 30,
-            nutritionType: 'Vegetarian',
-            additions: [],
-        },
-        {
-            title: 'Pasta',
-            time: 60,
-            nutritionType: 'Vegetarian',
-            additions: [],
-        },
-        {
-            title: 'Salad',
-            time: 15,
-            nutritionType: 'Vegan',
-            additions: ['dressing', 'croutons'],
-        },
-        {
-            title: 'Burger',
-            time: 30,
-            nutritionType: 'Omnivore',
-            additions: ['ketchup'],
-        },
-        {
-            title: 'Pizza',
-            time: 60,
-            nutritionType: 'Vegetarian',
-            additions: ['cheese', 'sauce'],
-        },
-        {
-            title: 'Tacos',
-            time: 45,
-            nutritionType: 'Omnivore',
-            additions: ['salsa', 'guacamole'],
-        },
-        {
-            title: 'Sushi',
-            time: 90,
-            nutritionType: 'Pescatarian',
-            additions: ['soy sauce', 'wasabi'],
-        }
-    ];
+    interface Recipe {
+        id: number;
+        description: string;
+        ingredients: string[];
+        instructions: string;
+        name: string;
+        image64: string;
+    }
 
-    $: filteredRecipes = recipes.filter(recipe =>
-        recipe.title.toLowerCase().includes(search.toLowerCase())
-    );
+    export let data;
 
-    function viewDetails(recipeTitle: any) {
-        goto(`/MyRecipes/recipe/${recipeTitle}`);
+    let recipes: Recipe[] = data.recipes.recipes;
+
+    let filteredRecipes: Recipe[] = [];
+
+    $: if (recipes) {
+        filteredRecipes = recipes.filter(recipe =>
+            recipe.name.toLowerCase().includes(search.toLowerCase())
+        );
+    }
+
+    function viewDetails(recipeId: number) {
+        goto(`/MyRecipes/recipe/${recipeId}`);
     }
 </script>
 
@@ -65,19 +37,33 @@
     </div>
     {#each filteredRecipes as recipe}
         <div class="bg-secondary-400 w-2/3 py-2 rounded-xl mt-4 ps-5 flex justify-between">
-            <div>
-                <h2 class="text-white text-2xl">{ recipe.title }</h2>
+            <img src={"data:image/jpg;base64," + recipe.image64} alt={recipe.name} class="recipe-image"/>
+            <div class="recipe-content ps-2 w-5/6">
+                <h2 class="text-white text-2xl">{ recipe.name }</h2>
                 <p class="text-white text-lg">
-                    { recipe.time } { recipe.time === 1 ? 'min' : 'mins' } | { recipe.nutritionType }
+                    { recipe.description }
                 </p>
                 <p class="text-white text-lg">Needed
-                    Additions: { !recipe.additions.length ? 'None' : recipe.additions.join(', ') }
+                    Ingredients: { !recipe.ingredients.length ? 'None' : recipe.ingredients.join(', ') }
                 </p>
             </div>
-            <button on:click={() => viewDetails(recipe.title)}
-                    class="bg-primary-500 text-white rounded-xl px-2 me-5">
+            <button on:click={() => viewDetails(recipe.id)}
+                    class="bg-primary-500 w-1/6 text-white rounded-xl px-2 me-5">
                 View Details
             </button>
         </div>
     {/each}
 </div>
+
+<style>
+    .recipe-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .recipe-content {
+        flex-grow: 1;
+    }
+</style>

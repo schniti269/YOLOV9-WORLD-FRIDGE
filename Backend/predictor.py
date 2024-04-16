@@ -25,7 +25,7 @@ model.set_classes(classes)
 print("model loaded")
 def run_inference_on_image(image):
     
-    results = model.infer(image,confidence=0.1,iou=0.3)
+    results = model.infer(image,confidence=0.01,iou=0.3)
 
     detections = sv.Detections.from_inference(results)
     BOUNDING_BOX_ANNOTATOR = sv.BoundingBoxAnnotator(thickness=2)

@@ -44,7 +44,7 @@
                 openLoginCard.set(true);
                 loggedIn = true; //temporarily set
             }}>
-                Sign in
+                Sign in | Sign out
             </DropdownItem>
         </Dropdown>
     {/if}

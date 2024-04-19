@@ -7,6 +7,10 @@ Die Koch-Assistent-App hilft Nutzern, Rezepte basierend auf den Zutaten, die sie
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 ![Deployment Status](https://img.shields.io/badge/deployment-live-brightgreen.svg)
 
+![Frontend Tests](https://img.shields.io/badge/frontend%20tests-passing-brightgreen.svg)
+![Backend Tests (pytest)](https://img.shields.io/badge/backend%20tests%20(pytest)-passing-brightgreen.svg)
+
+
 ## Features
 
 - **Kamera-Integration**: Machen Sie ein Foto Ihres Kühlschranks, um verfügbare Zutaten zu identifizieren.
